@@ -17,10 +17,9 @@ const RegisterPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<UserData>();
-
+  console.log(errors);
   const onSubmit = async (data: UserData) => {
     console.log(data);
-
     try {
     } catch (err: any) {
       console.error(err.message);
@@ -52,11 +51,16 @@ const RegisterPage = () => {
               </label>
               <input
                 type="text"
-                {...register("username")}
+                {...register("username", {
+                  required: "Username is required",
+                })}
                 placeholder="User Name"
                 className="w-full p-3 border border-gray-300 rounded "
                 required
               />
+              {errors.username && (
+                <p className="text-red-500">{errors.username.message}</p>
+              )}
             </div>
 
             <div className="mb-4">
@@ -65,10 +69,11 @@ const RegisterPage = () => {
               </label>
               <input
                 type="email"
-                {...register("email")}
+                {...register("email", {
+                  required: "Email is required",
+                })}
                 placeholder="Email"
                 className="w-full p-3 border border-gray-300 rounded "
-                required
               />
             </div>
 
@@ -77,12 +82,20 @@ const RegisterPage = () => {
                 Password
               </label>
               <input
-                {...register("password")}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Minimum 6 characters",
+                  },
+                })}
                 type="password"
                 placeholder="Password"
                 className="w-full p-3 border border-gray-300 rounded "
-                required
               />
+              {errors.password && (
+                <p className="text-red-500">{errors.password.message}</p>
+              )}
             </div>
 
             <div className="mb-4">
