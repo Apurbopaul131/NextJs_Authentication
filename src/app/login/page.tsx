@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { loginUser } from "@/actions/LoginUser";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import { useForm } from "react-hook-form";
 
-type FormValues = {
+export type FormValues = {
   email: string;
   password: string;
 };
@@ -15,9 +19,20 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
-
+  const router = useRouter();
   const onSubmit = async (data: FormValues) => {
-    console.log(data);
+    try {
+      const res = await loginUser(data);
+      console.log(res);
+      if (res?.accessToken) {
+        alert(res?.message);
+        localStorage.setItem("accessToken", res?.accessToken);
+        router.push("/");
+      }
+    } catch (err: any) {
+      console.error(err.message);
+      throw new Error(err.message);
+    }
   };
 
   return (
@@ -48,11 +63,16 @@ const LoginPage = () => {
               <input
                 id="email"
                 type="email"
-                {...register("email")}
+                {...register("email", {
+                  required: "Email is required",
+                })}
                 placeholder="Email"
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm  sm:text-sm"
                 required
               />
+              {errors?.email && (
+                <p className="text-red-500">{errors?.email?.message}</p>
+              )}
             </div>
 
             <div className="mb-6">
@@ -65,11 +85,19 @@ const LoginPage = () => {
               <input
                 id="password"
                 type="password"
-                {...register("password")}
+                {...register("password", {
+                  required: "password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Minimum 6 characters",
+                  },
+                })}
                 placeholder="Email"
                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm  sm:text-sm"
-                required
               />
+              {errors?.password && (
+                <p className="text-red-500">{errors?.email?.message}</p>
+              )}
             </div>
 
             <div>

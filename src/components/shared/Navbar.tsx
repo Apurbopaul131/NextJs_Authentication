@@ -1,10 +1,17 @@
 "use client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const { data: session } = useSession();
-  console.log(session);
+  const [accessToken, setAccessToken] = useState("");
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setAccessToken(token);
+    }
+  }, []);
   return (
     <div className="w-[90%] mx-auto flex items-center justify-between bg-white border-b py-4">
       <div className="flex items-center">
@@ -70,7 +77,7 @@ const Navbar = () => {
       </div>
 
       <div className="flex items-center">
-        {session?.user ? (
+        {session?.user || accessToken ? (
           <button
             onClick={() => signOut()}
             className="border border-red-500 text-red-500 px-5 py-2 rounded-full hover:bg-red-500 hover:text-black transition duration-200"
